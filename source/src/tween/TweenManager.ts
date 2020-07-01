@@ -132,5 +132,14 @@ module fgui {
 
             return false;
         }
+
+        // extention
+        public static killAllActiveTweens(): void {
+            var cnt = TweenManager._totalActiveTweens;
+            for (var i = 0; i < cnt; i++) {
+                var tweener = TweenManager._activeTweens[i];
+                tweener.kill();
+            }
+        }
     }
 }

@@ -213,6 +213,9 @@ module fgui {
 
             if (ToolSet.startsWith(this._url, "ui://"))
                 this.loadFromPackage(this._url);
+            // extension
+            else if (fgui.ToolSet.startsWith(this._url, 'data:'))
+                this.loadFromBase64(this._url);
             else
                 this.loadExternal();
         }
@@ -270,6 +273,23 @@ module fgui {
             else
                 this.setErrorState();
         }
+
+        // extension
+        protected loadFromBase64 = function(base64Str: string) {
+            // !这里只针对图形验证码做的临时处理
+            base64Str = base64Str.replace('data:img/jpeg;base64,', '');
+            egret.BitmapData.create('base64', base64Str, bitmapData => {
+                let texture = new egret.Texture();
+                texture.bitmapData = bitmapData;
+                this._content.texture = texture;
+                this._content.scale9Grid = null;
+                this._content.fillMode = egret.BitmapFillMode.SCALE;
+                // !这里只针对图形验证码做的临时宽高处理
+                this._contentSourceWidth = 200 || texture.textureWidth;
+                this._contentSourceHeight = 60 || texture.textureHeight;
+                this.updateLayout();
+            });
+        };
 
         protected loadExternal(): void {
             RES.getResByUrl(this._url, this.__getResCompleted, this);
